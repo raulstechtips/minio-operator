@@ -1,0 +1,44 @@
+suite: STS certificate
+templates:
+  - templates/sts-certificate.yaml
+release:
+  name: minio-operator
+  namespace: minio-operator
+tests:
+  - it: is off by default
+    asserts:
+      - hasDocuments:
+          count: 0
+  - it: keeps the live certificate fields
+    values:
+      - ../ci/all-on-values.yaml
+    asserts:
+      - isKind:
+          of: Certificate
+      - equal:
+          path: metadata.name
+          value: sts-tls-certificate
+      - equal:
+          path: spec
+          value:
+            secretName: fake-sts-tls
+            duration: 8760h
+            renewBefore: 720h
+            subject:
+              organizations: [example.test]
+            dnsNames: [sts, sts.minio-operator.svc, sts.minio-operator.svc.cluster.local]
+            issuerRef:
+              name: fake-ca-issuer
+              kind: ClusterIssuer
+  - it: calculates DNS names from the release namespace
+    values:
+      - ../ci/all-on-values.yaml
+    release:
+      namespace: alternate
+    asserts:
+      - equal:
+          path: metadata.namespace
+          value: alternate
+      - equal:
+          path: spec.dnsNames
+          value: [sts, sts.alternate.svc, sts.alternate.svc.cluster.local]

@@ -1,0 +1,16 @@
+# Fake connection and certificate values for local and CI checks.
+infisical:
+  authRef:
+    name: fake-auth
+    namespace: fake-secrets
+  projectSlug: fake-project
+  environmentSlug: fake-environment
+stsCertificate:
+  enabled: true
+  secretName: fake-sts-tls
+  organization: example.test
+  issuerRef:
+    name: fake-ca-issuer
+operatorCaSecret:
+  enabled: true
+  secretName: fake-operator-ca

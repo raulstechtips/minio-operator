@@ -1,0 +1,25 @@
+{{- if .Values.stsCertificate.enabled }}
+{{- $cert := .Values.stsCertificate }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sts-tls-certificate
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "minio-operator-wrapper.labels" . | nindent 4 }}
+spec:
+  secretName: {{ required "stsCertificate.secretName is required when stsCertificate is enabled" $cert.secretName | quote }}
+  duration: {{ $cert.duration | quote }}
+  renewBefore: {{ $cert.renewBefore | quote }}
+  subject:
+    organizations:
+      - {{ required "stsCertificate.organization is required when stsCertificate is enabled" $cert.organization | quote }}
+  # Match the STS Service in any release namespace.
+  dnsNames:
+    - sts
+    - {{ printf "sts.%s.svc" .Release.Namespace }}
+    - {{ printf "sts.%s.svc.cluster.local" .Release.Namespace }}
+  issuerRef:
+    name: {{ required "stsCertificate.issuerRef.name is required when stsCertificate is enabled" $cert.issuerRef.name | quote }}
+    kind: {{ $cert.issuerRef.kind }}
+{{- end }}

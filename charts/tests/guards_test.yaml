@@ -1,0 +1,96 @@
+suite: Wrapper guards and schema
+templates:
+  - templates/operator-ca-secret.yaml
+  - templates/sts-certificate.yaml
+tests:
+  - it: requires the Infisical auth name
+    template: templates/operator-ca-secret.yaml
+    values: [../ci/all-on-values.yaml]
+    set:
+      infisical.authRef.name: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: infisical.authRef.name is required when operatorCaSecret is enabled
+  - it: requires the Infisical auth namespace
+    template: templates/operator-ca-secret.yaml
+    values: [../ci/all-on-values.yaml]
+    set:
+      infisical.authRef.namespace: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: infisical.authRef.namespace is required when operatorCaSecret is enabled
+  - it: requires the Infisical project
+    template: templates/operator-ca-secret.yaml
+    values: [../ci/all-on-values.yaml]
+    set:
+      infisical.projectSlug: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: infisical.projectSlug is required when operatorCaSecret is enabled
+  - it: requires the Infisical environment
+    template: templates/operator-ca-secret.yaml
+    values: [../ci/all-on-values.yaml]
+    set:
+      infisical.environmentSlug: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: infisical.environmentSlug is required when operatorCaSecret is enabled
+  - it: requires the CA target name
+    template: templates/operator-ca-secret.yaml
+    values: [../ci/all-on-values.yaml]
+    set:
+      operatorCaSecret.secretName: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: operatorCaSecret.secretName is required when operatorCaSecret is enabled
+  - it: requires the STS Secret name
+    template: templates/sts-certificate.yaml
+    values: [../ci/all-on-values.yaml]
+    set:
+      stsCertificate.secretName: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: stsCertificate.secretName is required when stsCertificate is enabled
+  - it: requires the certificate organization
+    template: templates/sts-certificate.yaml
+    values: [../ci/all-on-values.yaml]
+    set:
+      stsCertificate.organization: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: stsCertificate.organization is required when stsCertificate is enabled
+  - it: requires the certificate issuer
+    template: templates/sts-certificate.yaml
+    values: [../ci/all-on-values.yaml]
+    set:
+      stsCertificate.issuerRef.name: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: stsCertificate.issuerRef.name is required when stsCertificate is enabled
+  - it: rejects unknown wrapper keys
+    template: templates/operator-ca-secret.yaml
+    set:
+      operatorCaSecret.typo: true
+    asserts:
+      - failedTemplate:
+          errorMessage: |
+            values don't meet the specifications of the schema(s) in the following chart(s):
+            minio-operator:
+            - operatorCaSecret: Additional property typo is not allowed
+  - it: rejects a quoted enabled flag
+    template: templates/operator-ca-secret.yaml
+    set:
+      operatorCaSecret.enabled: "true"
+    asserts:
+      - failedTemplate:
+          errorMessage: |
+            values don't meet the specifications of the schema(s) in the following chart(s):
+            minio-operator:
+            - operatorCaSecret.enabled: Invalid type. Expected: boolean, given: string
+  - it: permits upstream values without restricting their keys
+    template: templates/operator-ca-secret.yaml
+    set:
+      operator.anyUpstreamKey: fake-value
+    asserts:
+      - hasDocuments:
+          count: 0
