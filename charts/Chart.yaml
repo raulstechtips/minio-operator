@@ -1,0 +1,12 @@
+apiVersion: v2
+name: minio-operator
+description: "MinIO Operator wrapper: upstream operator, STS certificate, and operator CA secret sync."
+type: application
+version: 1.0.0
+# Upstream chart app version. The deployed image override is v7.1.0; see Adoption notes.
+appVersion: v7.0.1
+dependencies:
+  - name: operator
+    version: 7.0.1
+    # Public and Harbor 7.0.1 archives have the same SHA-256.
+    repository: https://operator.min.io

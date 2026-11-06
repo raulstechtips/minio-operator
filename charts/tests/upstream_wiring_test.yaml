@@ -1,0 +1,66 @@
+suite: Upstream operator wiring
+templates:
+  - charts/operator/templates/operator-deployment.yaml
+  - charts/operator/templates/operator-service.yaml
+  - charts/operator/templates/sts-service.yaml
+  - charts/operator/templates/minio.min.io_tenants.yaml
+  - charts/operator/templates/sts.min.io_policybindings.yaml
+release:
+  name: minio-operator
+  namespace: minio-operator
+tests:
+  - it: keeps the live deployment name image replicas and arguments
+    template: charts/operator/templates/operator-deployment.yaml
+    asserts:
+      - equal:
+          path: metadata.name
+          value: minio-operator
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: harbor.prod.raulstechtips.dev/raulstechtips/operator:v7.1.0
+      - equal:
+          path: spec.template.spec.containers[0].args
+          value: [controller]
+      - equal:
+          path: spec.template.spec.containers[0].env
+          value:
+            - name: OPERATOR_STS_ENABLED
+              value: "on"
+            - name: OPERATOR_STS_AUTO_TLS_ENABLED
+              value: "off"
+      - equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            limits: {cpu: 500m, ephemeral-storage: 500Mi, memory: 512Mi}
+            requests: {cpu: 200m, ephemeral-storage: 500Mi, memory: 256Mi}
+  - it: keeps the operator service
+    template: charts/operator/templates/operator-service.yaml
+    asserts:
+      - equal:
+          path: metadata.name
+          value: operator
+  - it: keeps the STS service
+    template: charts/operator/templates/sts-service.yaml
+    asserts:
+      - equal:
+          path: metadata.name
+          value: sts
+  - it: retains the tracked Tenant CRD
+    template: charts/operator/templates/minio.min.io_tenants.yaml
+    asserts:
+      - isKind:
+          of: CustomResourceDefinition
+      - equal:
+          path: metadata.name
+          value: tenants.minio.min.io
+  - it: retains the tracked PolicyBinding CRD
+    template: charts/operator/templates/sts.min.io_policybindings.yaml
+    asserts:
+      - isKind:
+          of: CustomResourceDefinition
+      - equal:
+          path: metadata.name
+          value: policybindings.sts.min.io

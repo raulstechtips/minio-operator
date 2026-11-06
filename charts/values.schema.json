@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["infisical", "stsCertificate", "operatorCaSecret", "operator"],
+  "properties": {
+    "global": {"type": "object"},
+    "operator": {"type": "object"},
+    "infisical": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authRef", "projectSlug", "environmentSlug"],
+      "properties": {
+        "authRef": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "namespace"],
+          "properties": {
+            "name": {"type": "string"},
+            "namespace": {"type": "string"}
+          }
+        },
+        "projectSlug": {"type": "string"},
+        "environmentSlug": {"type": "string"}
+      }
+    },
+    "stsCertificate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "secretName", "duration", "renewBefore", "organization", "issuerRef"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "secretName": {"type": "string"},
+        "duration": {"type": "string", "minLength": 1},
+        "renewBefore": {"type": "string", "minLength": 1},
+        "organization": {"type": "string"},
+        "issuerRef": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "kind"],
+          "properties": {
+            "name": {"type": "string"},
+            "kind": {"type": "string", "enum": ["Issuer", "ClusterIssuer"]}
+          }
+        }
+      }
+    },
+    "operatorCaSecret": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "secretName", "secretPath", "recursive", "refreshInterval"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "secretName": {"type": "string"},
+        "secretPath": {"type": "string", "minLength": 1},
+        "recursive": {"type": "boolean"},
+        "refreshInterval": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

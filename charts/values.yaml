@@ -1,0 +1,48 @@
+# Environment values belong in cluster-config/apps/dev/minio-operator.yaml.
+infisical:
+  authRef:
+    name: ""
+    namespace: ""
+  projectSlug: ""
+  environmentSlug: ""
+
+stsCertificate:
+  # Enable when the issuer is ready. The operator expects the sts-tls Secret.
+  enabled: false
+  secretName: sts-tls
+  duration: 8760h
+  renewBefore: 720h
+  organization: raulstechtips
+  issuerRef:
+    name: raulstechtips-internal-ca-issuer
+    kind: ClusterIssuer
+
+operatorCaSecret:
+  # The CA used by the tenant remains with the operator, not the tenant chart.
+  enabled: false
+  secretName: ""
+  secretPath: /certificates/internal
+  recursive: true
+  refreshInterval: 60s
+
+# Dependency name, then the upstream chart's own operator values block.
+# Only values that differ from upstream 7.0.1 defaults are set here.
+operator:
+  operator:
+    # Keep the live replica count and resource limits during adoption.
+    replicaCount: 1
+    image:
+      # Keep the live image, although the chart app version is v7.0.1.
+      repository: harbor.prod.raulstechtips.dev/raulstechtips/operator
+      tag: v7.1.0
+    env:
+      - name: OPERATOR_STS_ENABLED
+        value: "on"
+      # cert-manager supplies sts-tls; the operator must not generate it.
+      - name: OPERATOR_STS_AUTO_TLS_ENABLED
+        value: "off"
+    resources:
+      limits:
+        cpu: 500m
+        ephemeral-storage: 500Mi
+        memory: 512Mi
