@@ -120,7 +120,7 @@ The STS DNS names are `sts`, `sts.<namespace>.svc`, and
   `kubernetes.io/tls` with `ca.crt`, `tls.crt`, and `tls.key`. Keep the old source
   from reconciling during this handover.
 - Chart 7.0.1 identifies its app version as `v7.0.1`, but the live operator image
-  is `harbor.prod.raulstechtips.dev/raulstechtips/operator:v7.1.0`. This mismatch
+  is `harbor.dev.raulstechtips.dev/raulstechtips/operator:v7.1.0`. This mismatch
   stays for parity. Tenant pods use `quay.io/minio/operator-sidecar:v7.0.1`.
   Do not add `OPERATOR_SIDECAR_IMAGE`: the live Deployment does not set it.
 - The chart dependency no longer needs Harbor. The operator image still does.
