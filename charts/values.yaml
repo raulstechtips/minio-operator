@@ -33,7 +33,7 @@ operator:
     replicaCount: 1
     image:
       # Keep the live image, although the chart app version is v7.0.1.
-      repository: harbor.prod.raulstechtips.dev/raulstechtips/operator
+      repository: harbor.dev.raulstechtips.dev/raulstechtips/operator
       tag: v7.1.0
     env:
       - name: OPERATOR_STS_ENABLED

@@ -20,7 +20,7 @@ tests:
           value: 1
       - equal:
           path: spec.template.spec.containers[0].image
-          value: harbor.prod.raulstechtips.dev/raulstechtips/operator:v7.1.0
+          value: harbor.dev.raulstechtips.dev/raulstechtips/operator:v7.1.0
       - equal:
           path: spec.template.spec.containers[0].args
           value: [controller]
